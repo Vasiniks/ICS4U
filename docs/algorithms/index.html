@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Algorithms &amp; Sorting · ICS4U Unit 3</title>
+<meta name="description" content="ICS4U Unit 3 study guide: BBC documentary, how each sort works, micro-optimizations, visualizer, similarities and differences, homework answers, 48 practice questions.">
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;1,7..72,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<script>
+try { var t = localStorage.getItem('ics4u-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+</script>
+<style>
+
+/* ICS4U components mapped onto SBI4U tokens */
+#view { --card: var(--surface); --card-2: var(--surface-2); --text: var(--ink); --muted: var(--ink-2); --border: var(--line); --accent-2: var(--accent); --warn: var(--glyco); --radius: var(--r); }
+#view .container { max-width: 1040px; margin: 0 auto; padding: 0; }
+.hero { margin-bottom: 8px; }
+.hero h1 { font-size: clamp(34px, 5vw, 52px); }
+.hero h1 .grad { color: var(--accent); }
+.hero p { color: var(--ink-2); font-size: 18px; max-width: 68ch; }
+.hero .cta { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+.answer-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 22px; margin-bottom: 18px; }
+.answer-card h4 { margin-top: 0; color: var(--ink); }
+.answer-card table { width: 100%; border-collapse: collapse; font-size: 15px; margin: 12px 0; }
+.answer-card th, .answer-card td { padding: 9px 12px 9px 0; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+.answer-card thead th, .answer-card th { font-family: var(--display); color: var(--ink-2); font-size: 13.5px; }
+.pill-tag { display: inline-block; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); margin: 0 6px 6px 0; font-family: var(--display); }
+.trace, pre.code { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 13.5px; background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; overflow: auto; white-space: pre-wrap; color: var(--ink); line-height: 1.55; }
+.sort-card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px; }
+.sort-card .head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+.sort-card .name { font-size: 24px; font-weight: 800; margin: 0; }
+.badge { display: inline-block; font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--surface-2); color: var(--ink-2); border: 1px solid var(--line); font-family: var(--display); }
+.badge.cat { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
+table.complexity, table.cmp { width: 100%; border-collapse: collapse; font-size: 15px; }
+table.complexity th, table.complexity td, table.cmp th, table.cmp td { padding: 9px 12px 9px 0; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+table.complexity th, table.cmp th { font-family: var(--display); color: var(--ink-2); font-size: 13.5px; }
+.viz { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
+.viz-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 14px; font-family: var(--display); }
+.viz-controls label { color: var(--ink-2); font-size: 13.5px; }
+.viz-controls select, .viz-controls input[type=number] { background: var(--surface-2); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; font: inherit; font-size: 14px; }
+.viz-controls input[type=range] { accent-color: var(--accent); }
+.bars { display: flex; align-items: flex-end; gap: 2px; height: 260px; padding: 8px; background: var(--surface-2); border-radius: 10px; border: 1px solid var(--line); }
+.bar { flex: 1; background: var(--accent); border-radius: 3px 3px 0 0; min-width: 2px; }
+.bar.compare { background: var(--glyco); }
+.bar.swap { background: var(--proton); }
+.bar.sorted { background: var(--good); }
+.bar.pivot { background: var(--krebs); }
+.stats { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 12px; font-size: 14px; color: var(--ink-2); font-family: var(--display); }
+.stats b { color: var(--ink); }
+.race { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 720px) { .race { grid-template-columns: 1fr; } }
+.quiz { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px; margin-bottom: 16px; }
+.quiz .q { font-family: var(--display); font-size: 18px; font-weight: 650; margin-bottom: 12px; line-height: 1.4; }
+.quiz .opts { display: grid; gap: 8px; }
+.quiz .opt { padding: 11px 14px; border: 1px solid var(--line); border-radius: 10px; cursor: pointer; background: var(--bg); font-size: 16px; }
+.quiz .opt:hover { border-color: var(--ink-2); }
+.quiz .opt.correct { border-color: var(--good); background: var(--good-soft); }
+.quiz .opt.wrong { border-color: var(--bad); background: var(--bad-soft); }
+.quiz .opt.disabled { pointer-events: none; }
+.quiz .explain { margin-top: 12px; padding: 10px 14px; background: var(--surface-2); border-radius: 8px; color: var(--ink-2); font-size: 15px; display: none; }
+.quiz .explain.show { display: block; }
+.scoreboard { margin-bottom: 18px; }
+.scoreboard .pill { display: inline-block; padding: 4px 14px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 650; font-family: var(--display); font-size: 14px; }
+.opt-list { display: grid; gap: 12px; }
+.opt-item { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 8px; padding: 12px 16px; }
+.opt-item h5 { margin: 0 0 4px; font-size: 16px; }
+.opt-item p { margin: 0; color: var(--ink-2); font-size: 15px; }
+.bbc { background: var(--surface); border: 1px solid var(--line); border-left: 5px solid var(--proton); border-radius: 12px; padding: 22px; }
+.bbc .tag { display: inline-block; background: var(--proton); color: #fff; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 6px; margin-bottom: 10px; font-family: var(--display); }
+.clip { background: var(--surface-2); border-radius: 10px; padding: 12px 16px; margin-top: 10px; border-left: 3px solid var(--accent); }
+.card-grid-compat .card, #view .card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 20px; }
+#view .grid { display: grid; gap: 16px; }
+#view .grid.cols-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+#view .grid.cols-3 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+#view details { background: var(--surface-2); border-radius: 8px; padding: 10px 14px; margin: 8px 0; }
+#view details summary { cursor: pointer; font-weight: 650; font-family: var(--display); color: var(--accent); }
+
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-controls="sidebar" aria-expanded="false">Menu</button>
+  <a class="topbar-title" href="#overview">Algorithms &amp; Sorting</a>
+  <button class="theme-btn" data-theme-toggle aria-label="Switch colour theme">Theme</button>
+</header>
+<div class="shell">
+  <nav class="sidebar" id="sidebar" aria-label="Study guide">
+    <a class="brand" href="#overview">
+      <span class="brand-course">ICS4U · Unit 3</span>
+      <span class="brand-title">Algorithms &amp; Sorting</span>
+    </a>
+    <ul class="nav">
+      <li><a href="#overview" data-route="overview">Overview</a></li>
+      <li><a href="#bbc" data-route="bbc">BBC documentary</a></li>
+      <li><a href="#basics" data-route="basics">Basics</a></li>
+      <li><a href="#sorts" data-route="sorts">How each sort works</a></li>
+      <li><a href="#answers" data-route="answers">Homework answers</a></li>
+      <li><a href="#micro" data-route="micro">Micro-optimizations</a></li>
+      <li><a href="#viz" data-route="viz">Visualize</a></li>
+      <li><a href="#sim" data-route="sim">Similarities &amp; differences</a></li>
+      <li><a href="#quiz" data-route="quiz">Practice quiz</a></li>
+      <li class="nav-group"><span class="nav-label">More</span><ul>
+        <li><a href="../">All ICS4U units</a></li>
+      </ul></li>
+    </ul>
+    <div class="sidebar-foot">
+      <button class="theme-btn wide" data-theme-toggle>Switch theme</button>
+      <a class="back-hub" href="../">All units</a>
+    </div>
+  </nav>
+  <div class="scrim" id="scrim" hidden></div>
+  <main id="main" tabindex="-1">
+    <div id="view">
+<header class="hero">
+  <div class="container">
+    <h1>Sorting Algorithms<br><span class="grad">Everything you need to know.</span></h1>
+    <p>Built directly from your ICS4U Unit 3 handouts, homework pages, Python starters, and the BBC documentary. How every sort works, the micro-optimizations that make them fast, interactive visualizations, side-by-side similarities &amp; differences, <strong>worked answers to every practice / homework prompt</strong>, and quizzes from easy to hard.</p>
+    <div class="cta">
+      <a class="btn primary" href="#viz">Try the visualizer</a>
+      <a class="btn" href="#answers">Jump to homework answers</a>
+      <a class="btn" href="#quiz">Take the quiz</a>
+    </div>
+    <p style="margin-top:16px;font-size:14px;color:var(--muted)">Source material: Day 2 Algo Language · Day 3 BBC takeup · Day 4 Bubble handout + code · Day 5 Selection handout + code + differences · Day 6 Counting lesson + countingSortLesson.py + lotsOfMoney.txt · Homework.html (Euclid + Powers) · Bubble Sort Algorithm.html (4 variants) · Study Guide · Algorithm Assignment (Algorithms to Live By).</p>
+  </div>
+</header>
+<section id="bbc">
+  <div class="container">
+    <h2>The BBC documentary</h2>
+    <p class="lead">"The Secret Rules of Modern Living: Algorithms" (BBC Four, 2015) — presented by mathematician Marcus du Sautoy. Your course uses it to ask: what effect do different methods of ordering have on the speed of sorting large volumes of data?</p>
+    <div class="bbc">
+      <span class="tag">BBC Four · 2015 · 58 min · Marcus du Sautoy</span>
+      <h3 style="color:#fff;margin-top:0">Battle of the algorithms</h3>
+      <p style="color:#ddd">Du Sautoy stages a head-to-head: <strong>Bubble Sort vs Merge Sort</strong> on a large dataset. Bubble sort — compare adjacent pairs, swap if out of order, largest "bubbles" to the end each pass — is simple but slow. Merge sort — John von Neumann's divide-and-conquer: split in half, sort each half, merge — is guaranteed fast even on large data. The programme also tours <strong>Quick Sort, Shell Sort, Selection Sort, Insertion Sort</strong> and asks: which is the "best" sort? Answer: there is no single best — it depends on data size, memory, stability, and whether data is nearly sorted.</p>
+      <div class="clip"><strong>Bubble Sort (1:55)</strong> — adjacent compare-and-swap. After pass k, the k largest are in place. Simple, stable, in-place, but O(n²).</div>
+      <div class="clip"><strong>Merge Sort (1:23)</strong> — split, sort halves, merge with ≤ to stay stable. O(n log n) guaranteed, O(n) extra space.</div>
+      <div class="clip"><strong>Best Sort (2:52)</strong> — Bubble vs Merge plus Quick / Shell / Select / Insert. No universal winner.</div>
+      <div class="clip"><strong>Sorting is perfect for computers (8:19)</strong> — Patrick Prosser (Glasgow) &amp; Leslie Ann Goldberg (Oxford): code makes an algorithm specific; data travels as packets.</div>
+      <div class="clip"><strong>Euclid's algorithm (3:05)</strong> — 2,300-year-old GCD algorithm demoed with colourful square tiles on the floor. Subtractive version peels one tile-row at a time; modulo version jumps straight to the remainder. Same GCD, far fewer steps.</div>
+      <div class="clip"><strong>PageRank (5:17)</strong> — Google's search algorithm (Larry Page &amp; Sergey Brin): rank pages by link structure.</div>
+      <p style="margin-top:16px;color:#ddd"><a href="https://www.bbc.co.uk/programmes/p030s6b3" target="_blank" rel="noopener">BBC iPlayer (UK) →</a> &nbsp;·&nbsp; <a href="https://clp.bbcrewind.co.uk/65c5ea77ca86ebf2a1aec6f561370783" target="_blank" rel="noopener">BBC Rewind clips →</a></p>
+    </div>
+    <h3>Algorithms to Live By — chapters used in class</h3>
+    <p style="color:var(--muted)">Brian Christian &amp; Tom Griffiths argue algorithms were used by people before computers. Your assignment groups each present one chapter (30-min meeting, 5 min each, props, no slides):</p>
+    <div class="grid cols-2">
+      <div class="card"><h4>Ch 1 · Optimal Stopping (37% rule)</h4><p>When to stop looking and commit: look at 37% of options with no commitment, then take the next one that beats all so far. Hiring, house-hunting, parking.</p></div>
+      <div class="card"><h4>Ch 2 · Explore / Exploit</h4><p>New restaurant vs favourite? Multi-armed bandit. Win-Stay Lose-Shift. Balance trying new things early, exploiting late; regret minimization, Gittins index, upper-confidence bound.</p></div>
+      <div class="card"><h4>Ch 4 · Caching</h4><p>What to keep in fast limited memory: evict least-recently-used (LRU). CPU caches, libraries, your desk vs archive.</p></div>
+      <div class="card"><h4>Ch 5 · Scheduling</h4><p>Order tasks to minimize lateness: shortest-processing-time first, earliest-due-date, priority / weight. Operating systems, project planning.</p></div>
+      <div class="card"><h4>Ch 8 · Relaxation</h4><p>Hard constrained problems → relax constraints, solve easy version, round back. Lagrangian relaxation, linear programming bounds for TSP / scheduling.</p></div>
+      <div class="card"><h4>Win-Stay Lose-Shift</h4><p>Simple adaptive strategy from game theory / bandits: repeat what worked, change what didn't. Covered in Explore/Exploit excerpt.</p></div>
+    </div>
+  </div>
+</section>
+<section id="basics">
+  <div class="container">
+    <h2>The basics</h2>
+    <p class="lead">The vocabulary your 1st evaluation tests — plus Day 1–2 language.</p>
+    <div class="grid cols-3">
+      <div class="card"><h4>Algorithm</h4><p>Finite, unambiguous steps: input → output. Must terminate, must be precise enough to follow on paper (Rubik's moves, number cards). Example from class: "set max to 0; for each x: if x &gt; max, max ← x".</p></div>
+      <div class="card"><h4>Algorithm language</h4><p><span class="kbd">procedure</span>, <span class="kbd">← / :=</span> assignment, <span class="kbd">if / for / while / repeat / return</span>. Fibonacci example in handout uses <span class="kbd">x:=0; y:=1; for i:=1 to n−1: z:=x+y; x:=y; y:=z</span>.</p></div>
+      <div class="card"><h4>Comparison sort</h4><p>Orders by pairwise comparisons. Decision-tree lower bound Ω(n log n). Bubble, selection, insertion, merge, quick, heap, shell.</p></div>
+      <div class="card"><h4>Non-comparison sort</h4><p>Uses key structure (integer range, digits) for O(n+k) linear time: counting, radix, bucket. Only works on restricted keys.</p></div>
+      <div class="card"><h4>Stable</h4><p>Equal keys keep original order. Bubble / insertion / merge / counting / radix (yes); selection / quick / heap / shell (no, standard). Use &gt; not ≥ to stay stable.</p></div>
+      <div class="card"><h4>In-place</h4><p>O(1) extra (bubble, selection, insertion, shell, heap) or O(log n) stack (quick). Out-of-place: merge O(n), counting O(k).</p></div>
+      <div class="card"><h4>Adaptive / Online</h4><p>Adaptive = faster on nearly sorted (bubble+flag O(n), insertion O(n), Timsort). Online = handles stream (insertion).</p></div>
+      <div class="card"><h4>Big-O</h4><p>Growth as n→∞. Same Big-O ≠ same speed — constants, cache, branches decide. That's why micro-optimizations matter.</p></div>
+      <div class="card"><h4>Rubik's link</h4><p>Day 1: give algorithm + input + output ("provide the algorithm, input and output"). Tests: does it work? Is it ambiguous? Same test applies to sorts.</p></div>
+    </div>
+  </div>
+</section>
+<section id="sorts">
+  <div class="container">
+    <h2>How each sort works</h2>
+    <p class="lead">Nine sorts. Each card: idea, complexity, pseudocode, Python, micro-optimizations. The four you must know cold for the evaluation are <strong>Bubble, Selection, Insertion, Counting</strong> — the other five are BBC / general knowledge.</p>
+    <div id="sorts-container" class="grid" style="grid-template-columns:1fr"></div>
+  </div>
+</section>
+<section id="answers">
+  <div class="container">
+    <h2>Practice &amp; homework — worked answers</h2>
+    <p class="lead">Every prompt from Homework.html, Bubble Sort Algorithm.html, Selection / Insertion / Counting handouts — with similarity / difference, trace, and runnable Python. Copy-paste ready.</p>
+
+    <div class="answer-card" id="ans-euclid">
+      <span class="pill-tag">Homework.html</span><span class="pill-tag">BBC tiles demo</span>
+      <h4>Euclid's GCD — Algorithm 1 (mod) vs Algorithm 2 (subtractive)</h4>
+      <div class="trace">ALG 1 (mod):
+function gcd(a, b)
+    while b ≠ 0
+        t := b;  b := a mod b;  a := t
+    return a
+
+ALG 2 (subtractive):
+function gcd(a, b)
+    while a ≠ b
+        if a &gt; b: a := a − b
+        else:       b := b − a
+    return a</div>
+      <table><tr><th></th><th>Similarity</th><th>Difference</th></tr>
+      <tr><td><strong>Answer</strong></td><td>Both compute GCD(a,b); both loop until a termination condition; both preserve gcd(a,b)=gcd(b,a mod b)=gcd(a−b,b); same output on all positive inputs.</td><td>ALG 1 uses <strong>division remainder</strong> — jumps many subtractions at once, O(log min(a,b)) steps. ALG 2 uses <strong>repeated subtraction</strong> — one subtraction per loop, O(max(a,b)) steps in the worst case. Tiles demo: mod removes a whole strip; subtractive peels one square row at a time.</td></tr></table>
+      <p><strong>Trace gcd(48,18)=6:</strong> Mod: (48,18)→(18,12)→(12,6)→(6,0) = 3 loops. Subtractive: 48−18=30, 30−18=12, 18−12=6, 12−6=6, 6=6 stop = 4 subtractions (worse gap explodes e.g. gcd(1000,1) = 1 mod step vs 999 subtractions).</p>
+      <details><summary>Python — both versions</summary><pre class="trace">def gcd_mod(a, b):
+    while b != 0:
+        t = b
+        b = a % b
+        a = t
+    return a
+
+def gcd_sub(a, b):
+    while a != b:
+        if a &gt; b:
+            a = a - b
+        else:
+            b = b - a
+    return a
+
+print(gcd_mod(48, 18), gcd_sub(48, 18))  # 6 6</pre></details>
+    </div>
+
+    <div class="answer-card" id="ans-powers">
+      <span class="pill-tag">Homework.html</span>
+      <h4>Computing Powers — naive (×n) vs fast (halve / subtract-one)</h4>
+      <div class="trace">ALG 1 (naive): result=1; multiply by x, n times.  O(n) mults.
+ALG 2 (fast): write n; while last≠1: if even halve it, if odd subtract 1.
+  Start result=x; walk list backwards: "half" → square, "one less" → ×x.  O(log n) mults.</div>
+      <table><tr><th></th><th>Similarity</th><th>Difference</th></tr>
+      <tr><td><strong>Answer</strong></td><td>Both compute xⁿ for n≥1; both iterative; same result; both multiply-only.</td><td>ALG 1 does <strong>n−1 multiplications</strong> (linear). ALG 2 does <strong>O(log n)</strong> via exponentiation-by-squaring (uses binary expansion of n). ALG 2 builds an auxiliary list and walks it backwards; ALG 1 needs no extra structure.</td></tr></table>
+      <p><strong>Trace 2¹⁰:</strong> Naive = 9 mults. Fast: list 10→5→4→2→1; backwards from x=2: half→square (2²=4), one-less→×2 (8), half→square (64), half→square (1024) = 4 ops.</p>
+      <details><summary>Python — both versions (clean + runnable)</summary><pre class="trace">def power_naive(x, n):
+    r = 1
+    for _ in range(n):
+        r *= x
+    return r
+
+def power_fast(x, n):
+    # exponentiation by squaring — O(log n)
+    # mirrors handout: halve when even, subtract-one (×x) when odd
+    r, base, exp = 1, x, n
+    while exp &gt; 0:
+        if exp % 2 == 1:
+            r *= base
+        base *= base
+        exp //= 2
+    return r
+
+# handout trace helper: show the halve/subtract-one list for n
+def power_list(n):
+    seq = [n]
+    while seq[-1] != 1:
+        seq.append(seq[-1] // 2 if seq[-1] % 2 == 0 else seq[-1] - 1)
+    return seq
+
+print(power_naive(2, 10), power_fast(2, 10))  # 1024 1024
+print(power_list(10))  # [10, 5, 4, 2, 1] — walk back: square, ×x, square, square</pre></details>
+    </div>
+
+    <div class="answer-card" id="ans-bubble4">
+      <span class="pill-tag">Bubble Sort Algorithm.html</span><span class="pill-tag">Day 4 handout + code file</span>
+      <h4>Bubble Sort — 4 variants: similarities &amp; differences + code</h4>
+      <div class="trace">A1: while swapped and L&lt;N-1: swapped=false; for i=N-1 downto L+1: if A[i]&lt;A[i-1] swap; L++
+A2: repeat N-1 times: for i=0..N-2: if A[i]&gt;A[i+1] swap
+A3: for I=0..N-2: for J=0..N-2: if A[J]&gt;A[J+1] swap          (fixed bounds, no shrink)
+A4: cocktail: do { swapped=false; forward pass 0..n-2; if !swapped break; swapped=false; backward pass n-2..0 } while swapped</div>
+      <table><tr><th>Variant</th><th>Direction</th><th>Early exit?</th><th>Bound shrinks?</th><th>Notes</th></tr>
+      <tr><td>A1 (L-bound)</td><td>Right→left (small bubbles left)</td><td>Yes (swapped flag)</td><td>Yes (L++)</td><td>Adaptive O(n) best; fewest passes of the four on sorted input</td></tr>
+      <tr><td>A2 (textbook)</td><td>Left→right (large bubbles right)</td><td>No</td><td>No</td><td>Always N-1 passes, O(n²) even if sorted</td></tr>
+      <tr><td>A3 (double-for)</td><td>Left→right</td><td>No</td><td>No (0..N-2 both loops)</td><td>Same as A2 but for-loop form; compares already-sorted tail every pass — most wasted work</td></tr>
+      <tr><td>A4 (cocktail shaker)</td><td>Both (forward + backward)</td><td>Yes</td><td>Implicitly both ends</td><td>Fixes "turtles" (small values at end take n passes in one-directional bubble); best on bidirectional disorder</td></tr></table>
+      <p><strong>Similarity (all four):</strong> adjacent compare-and-swap only; same sorted result; in-place O(1); stable if comparison is strict <span class="kbd">&gt;</span> (not ≥); worst-case O(n²) comparisons+swaps; after pass k at least k elements are final.</p>
+      <p><strong>Difference to write on evaluation:</strong> pick any one — e.g. "A1 stops early via <span class="kbd">swapped</span> flag and shrinks the unsorted region with L, so sorted input costs O(n); A2/A3 have no flag and always do (N−1)² comparisons" — or "A4 passes in both directions while A2 passes left-to-right only".</p>
+      <details><summary>Python — Day 4 starter completed (do/while + for version)</summary><pre class="trace"># Day 4 starter pseudocode completed:
+# do { swapped=false; for i=1..last_unsorted: if left>right swap, swapped=true } while swapped
+
+def bubble_sort(a_list):
+    n = len(a_list)
+    while True:                       # do
+        swapped = False
+        for i in range(1, n):         # i = 1 .. index_of_last_unsorted
+            if a_list[i-1] > a_list[i]:
+                a_list[i-1], a_list[i] = a_list[i], a_list[i-1]
+                swapped = True
+        n -= 1                        # tail is sorted
+        if not swapped:               # while swapped
+            break
+    return a_list
+
+def other_bubble_sort(a_list):
+    # A2/A3 textbook: fixed N-1 passes, no flag
+    n = len(a_list)
+    for _ in range(n - 1):
+        for i in range(n - 1):
+            if a_list[i] &gt; a_list[i+1]:
+                a_list[i], a_list[i+1] = a_list[i+1], a_list[i]
+    return a_list
+
+def cocktail_sort(a_list):
+    # A4
+    n = len(a_list)
+    swapped = True
+    while swapped:
+        swapped = False
+        for i in range(n - 1):
+            if a_list[i] &gt; a_list[i+1]:
+                a_list[i], a_list[i+1] = a_list[i+1], a_list[i]
+                swapped = True
+        if not swapped:
+            break
+        swapped = False
+        for i in range(n - 2, -1, -1):
+            if a_list[i] &gt; a_list[i+1]:
+                a_list[i], a_list[i+1] = a_list[i+1], a_list[i]
+                swapped = True
+    return a_list
+
+a = [5, 4, 6, 2, 4, 6, 7, 8, 1]
+print(bubble_sort(a[:]))          # [1, 2, 4, 4, 5, 6, 6, 7, 8]
+print(other_bubble_sort(a[:]))    # same
+print(cocktail_sort(a[:]))        # same</pre></details>
+    </div>
+
+    <div class="answer-card" id="ans-selection">
+      <span class="pill-tag">Day 5 handout + code file</span>
+      <h4>Selection Sort — out-of-place vs in-place</h4>
+      <div class="trace">OUT-OF-PLACE: sorted←[]; repeat n: min←first of list; scan rest for smaller; remove min; append to sorted.
+IN-PLACE (visualgo): repeat n-1: min←first unsorted; scan unsorted for smaller; swap min with first unsorted.</div>
+      <table><tr><th></th><th>Similarity</th><th>Difference</th></tr>
+      <tr><td><strong>Answer</strong></td><td>Both select the minimum of the unsorted region each pass; both do ~n²/2 comparisons, n−1 selections; both Θ(n²) time; neither is adaptive.</td><td>Out-of-place builds a <strong>second list</strong> (O(n) extra, destroys/consumes input via remove); in-place <strong>swaps within the same array</strong> (O(1) extra, input preserved as sorted array). Out-of-place does no swaps (remove+append); in-place does ≤n−1 swaps. Typical in-place swap version is <strong>unstable</strong>; remove+append can preserve stability for equal keys if scan uses &lt; strictly.</td></tr></table>
+      <details><summary>Python — both versions (completes Day 5 starter)</summary><pre class="trace">def selection_sort_out_of_place(a_list):
+    work = a_list[:]          # don't destroy caller until done
+    sorted_list = []
+    while work:
+        m = 0
+        for i in range(1, len(work)):
+            if work[i] &lt; work[m]:
+                m = i
+        sorted_list.append(work.pop(m))
+    a_list.clear()
+    a_list.extend(sorted_list)
+    return a_list
+
+def selection_sort(a_list):   # in-place (visualgo)
+    n = len(a_list)
+    for i in range(n - 1):
+        m = i
+        for j in range(i + 1, n):
+            if a_list[j] &lt; a_list[m]:
+                m = j
+        a_list[i], a_list[m] = a_list[m], a_list[i]
+    return a_list
+
+numbers = [8, 8, 18, 13, 36, 0, 2, -2, -5]
+print(selection_sort_out_of_place(numbers[:]))  # [-5, -2, 0, 2, 8, 8, 13, 18, 36]
+print(selection_sort(numbers[:]))               # same</pre></details>
+    </div>
+
+    <div class="answer-card" id="ans-insertion">
+      <span class="pill-tag">page_551.html</span>
+      <h4>Insertion Sort (Visualgo algorithm) + code</h4>
+      <div class="trace">mark first element sorted
+for each unsorted X: 'extract' X
+  for j = lastSorted downto 0:
+    if A[j] &gt; X: shift A[j] right by 1
+    else: break and insert X</div>
+      <p>Stable, in-place, adaptive O(n) best / O(n²) worst, online. Shifts (not swaps) — one write per moved element plus final insert.</p>
+      <details><summary>Python</summary><pre class="trace">def insertion_sort(a):
+    for i in range(1, len(a)):
+        key = a[i]
+        j = i - 1
+        while j &gt;= 0 and a[j] &gt; key:
+            a[j + 1] = a[j]
+            j -= 1
+        a[j + 1] = key
+    return a
+
+print(insertion_sort([5, 4, 6, 2, 4, 6, 7, 8, 1]))
+# [1, 2, 4, 4, 5, 6, 6, 7, 8]</pre></details>
+    </div>
+
+    <div class="answer-card" id="ans-counting">
+      <span class="pill-tag">Day 6 lesson + page_725.html</span><span class="pill-tag">lotsOfMoney.txt (5000 lines)</span>
+      <h4>Counting Sort — base + Q1 (negatives / 6000–7000) + Q2 (money)</h4>
+      <p><strong>Base (non-negative ints):</strong> counting array size max+1; count occurrences; walk counters low→high, emit value counter times. O(n+k). Code in <span class="kbd">Day 6 - countingSortLesson.py</span>.</p>
+      <p><strong>Q1 Scenario 1 — negatives:</strong> value can't index directly. <span class="kbd">offset = min(list)</span>, <span class="kbd">spread = max − min</span>, size = spread+1, <span class="kbd">index = element − offset</span>, restore with <span class="kbd">value = index + offset</span>. <strong>Scenario 2 (6000–7000):</strong> same offset code kills the 0–5999 waste: size drops from 7001 to 1001. Reuse Scenario-1 code verbatim.</p>
+      <details><summary>Python — Q1 offset version</summary><pre class="trace">def counting_sort_offset(a):
+    if not a:
+        return []
+    mn, mx = min(a), max(a)
+    spread = mx - mn
+    cnt = [0] * (spread + 1)
+    for x in a:
+        cnt[x - mn] += 1
+    out = []
+    for i, c in enumerate(cnt):
+        out.extend([i + mn] * c)
+    return out
+
+print(counting_sort_offset([4, -2, 0, -2, 7, 6005, 6001, 7000][:6]))
+print(counting_sort_offset([6005, 6001, 7000, 6005]))  # offset saves ~6000 slots</pre></details>
+      <p><strong>Q2 — money ($0.05 … $100):</strong> only 8 distinct values → counting array of length 8, not 10001. Build two-way map value↔index (sorted unique list), count by index, expand by index. Floats never index directly (precision) — map via dict or cents.</p>
+      <details><summary>Python — Q2 money version (reads lotsOfMoney.txt)</summary><pre class="trace">def counting_sort_money(a):
+    uniq = sorted(set(a))                 # e.g. [0.05, 0.1, 0.25, 1.0, 2.0, ...]
+    to_i = {v: i for i, v in enumerate(uniq)}
+    cnt = [0] * len(uniq)
+    for x in a:
+        cnt[to_i[x]] += 1
+    out = []
+    for i, c in enumerate(cnt):
+        out.extend([uniq[i]] * c)
+    return out
+
+# with file:
+# vals = [float(line.strip()) for line in open('lotsOfMoney.txt')]
+# print(counting_sort_money(vals)[:10], '...', len(vals))</pre></details>
+    </div>
+
+    <div class="answer-card" id="ans-study">
+      <span class="pill-tag">Study Guide.html</span><span class="pill-tag">Algorithm Assignment F2026</span>
+      <h4>What the evaluations test (study checklist)</h4>
+      <div class="kv">
+        <div><strong>1st evaluation</strong><ul><li>In-class activities: sorting network, Rubik's, line-up → connect to efficiency / optimization / specific sort</li><li>Definitions (give it / recognize from example)</li><li>BBC algorithms by name + application + industry use</li><li>Bubble / Selection / Insertion / Counting: how they work (definition + worked example)</li><li>Code variations of those sorts (read provided code)</li><li>Difference between two provided algorithms</li><li>Write code for a simple algorithm</li></ul></div>
+        <div><strong>2nd evaluation</strong><ul><li>Searching: linear, binary, hash table — definition, uses, example, test, compare</li><li>Prove algorithm complexity + practice exercises</li><li>Recursion: structure of recursive function + practice</li></ul></div>
+      </div>
+      <p><strong>Assignment groups:</strong> Caching (Ethan/Sebastian/Eason/Yuchen) · Scheduling (Jay/Sehoon/Pavani) · Relaxation (Victoria/Richard/Luna) · Optimal Stopping (Jerry/Grace/Wenzhang). 30-min expert meeting, 5 min each + notes, then consensus model explanation with props, no slides. Graded on accuracy, clarity/vocab, props, and discussion that drives consensus.</p>
+    </div>
+  </div>
+</section>
+<section id="micro">
+  <div class="container">
+    <h2>Micro-optimizations</h2>
+    <p class="lead">Small changes, big speedups. Per-sort tricks live on each sort card — these are the cross-cutting ones plus the ones your handouts reward.</p>
+    <h3>Course handout favourites (write these on the test)</h3>
+    <div class="opt-list">
+      <div class="opt-item"><h5>Bubble: swapped flag → O(n) best case</h5><p>A1/A4 stop after a swap-free pass. A2/A3 can't. One boolean saves n−2 passes on sorted input.</p></div>
+      <div class="opt-item"><h5>Bubble: shrink the bound (L++ / n−−)</h5><p>Tail is final — never compare it again. Cuts ~n²/2 wasted comparisons.</p></div>
+      <div class="opt-item"><h5>Bubble: cocktail (bidirectional) for turtles</h5><p>A tiny value at the end needs n passes one-directional, 1 pass bidirectional. Alternate directions (A4).</p></div>
+      <div class="opt-item"><h5>Selection: one swap per pass</h5><p>n−1 writes total. Best when writes are expensive (flash / EEPROM).</p></div>
+      <div class="opt-item"><h5>Insertion: shift, don't swap</h5><p>3 writes per swap → 1 write per shift + 1 insert. Use binary search for the insert point on long prefixes.</p></div>
+      <div class="opt-item"><h5>Counting: offset (min) kills waste</h5><p>6000–7000 needs 1001 slots with offset, 7001 without, and is impossible with negatives without offset.</p></div>
+      <div class="opt-item"><h5>Counting money: dictionary map, not value-as-index</h5><p>8 unique bills → 8 counters. Never use floats as indexes; map value↔index.</p></div>
+      <div class="opt-item"><h5>Counting stable: prefix sums</h5><p>Turn counts into positions; place from the right. Required for radix sort.</p></div>
+    </div>
+    <h3>General (see each sort card for the rest)</h3>
+    <div id="micro-global" class="opt-list"></div>
+  </div>
+</section>
+<section id="viz">
+  <div class="container">
+    <h2>Visualize the sorts</h2>
+    <p class="lead">Amber = comparing · red = swap / write · purple = pivot / min · green = sorted. Step through Bubble's tail shrinking, Selection's min scan, Insertion's shifts, Counting's prefix placement.</p>
+    <div class="viz">
+      <div class="viz-controls">
+        <label>Algorithm</label>
+        <select id="viz-algo" aria-label="Algorithm"></select>
+        <label>Size</label>
+        <input type="number" id="viz-size" value="30" min="5" max="80" aria-label="Size">
+        <label>Speed</label>
+        <input type="range" id="viz-speed" min="1" max="100" value="60" aria-label="Speed">
+        <button class="btn" id="viz-gen">Generate</button>
+        <button class="btn primary" id="viz-start">Start</button>
+        <button class="btn" id="viz-pause">Pause</button>
+        <button class="btn" id="viz-step">Step</button>
+        <button class="btn" id="viz-reset">Reset</button>
+      </div>
+      <div id="viz-bars" class="bars"></div>
+      <div id="viz-stats" class="stats"></div>
+      <div id="viz-note" style="margin-top:8px;color:var(--muted);font-size:14px"></div>
+    </div>
+
+    <h3 style="margin-top:32px">Race mode — two sorts, same data</h3>
+    <p style="color:var(--muted)">Try Bubble vs Insertion on nearly-sorted data, or Selection vs Counting on small-range ints. Same input, step-locked.</p>
+    <div class="viz">
+      <div class="viz-controls">
+        <label>A</label>
+        <select id="race-a" aria-label="Algorithm A"></select>
+        <label>B</label>
+        <select id="race-b" aria-label="Algorithm B"></select>
+        <label>Size</label>
+        <input type="number" id="race-size" value="25" min="5" max="60" aria-label="Size">
+        <button class="btn primary" id="race-run">Run race</button>
+      </div>
+      <div class="race">
+        <div>
+          <div id="race-bars-a" class="bars"></div>
+          <div id="race-stats-a" class="stats"></div>
+        </div>
+        <div>
+          <div id="race-bars-b" class="bars"></div>
+          <div id="race-stats-b" class="stats"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="sim">
+  <div class="container">
+    <h2>Similarities &amp; differences</h2>
+    <p class="lead">The 9-sort table plus the exact variant comparisons your homework asks for.</p>
+    <div id="sim-table" style="overflow-x:auto"></div>
+
+    <h3>Homework variant cheat-sheet</h3>
+    <div class="grid cols-2">
+      <div class="card"><h4>Bubble A1 vs A2/A3</h4><p><strong>Same:</strong> adjacent swap, in-place, stable. <strong>Different:</strong> A1 has swapped-flag + shrinking bound (adaptive); A2/A3 always run all passes.</p></div>
+      <div class="card"><h4>Bubble A4 (cocktail) vs others</h4><p><strong>Same:</strong> adjacent swap core. <strong>Different:</strong> bidirectional passes; fixes turtles; both ends shrink.</p></div>
+      <div class="card"><h4>Euclid mod vs subtractive</h4><p><strong>Same:</strong> GCD result, loop invariant. <strong>Different:</strong> mod = O(log n) jumps; subtractive = O(n) peels. Tiles: strip vs single row.</p></div>
+      <div class="card"><h4>Powers naive vs fast</h4><p><strong>Same:</strong> xⁿ result. <strong>Different:</strong> O(n) mults vs O(log n) square-and-multiply; extra list + backward walk.</p></div>
+      <div class="card"><h4>Selection out vs in</h4><p><strong>Same:</strong> min-select, O(n²). <strong>Different:</strong> O(n) extra list + remove/append vs O(1) in-place swaps.</p></div>
+      <div class="card"><h4>Comparison vs counting</h4><p><strong>Same:</strong> both sort. <strong>Different:</strong> comparisons work on anything (Ω(n log n)); counting needs integer range but is O(n+k) linear.</p></div>
+    </div>
+
+    <h3>Key takeaways</h3>
+    <div class="grid cols-2">
+      <div class="card"><h4>Comparison vs. non-comparison</h4><p>Comparison sorts are general but bounded by Ω(n log n). Counting / radix beat it by exploiting key structure — only for suitable keys.</p></div>
+      <div class="card"><h4>Stability</h4><p>Merge, insertion, bubble, counting, radix: stable. Quick, heap, selection, shell: not (standard). Matters for multi-key sorts.</p></div>
+      <div class="card"><h4>In-place vs. extra memory</h4><p>Heap/quick/insertion/selection/bubble/shell: in-place. Merge O(n); counting/radix O(k)/O(n+k).</p></div>
+      <div class="card"><h4>Adaptivity</h4><p>Insertion + bubble-with-flag: great nearly-sorted. Selection + heap: always same work.</p></div>
+      <div class="card"><h4>Worst-case guarantees</h4><p>Merge + heap: O(n log n) guaranteed. Quick: O(n²) without good pivot. Counting/radix: linear in model.</p></div>
+      <div class="card"><h4>Cache &amp; constants</h4><p>Quicksort wins on random data via locality + tiny constants. Big-O isn't the whole story.</p></div>
+    </div>
+
+    <h3>Which sort when?</h3>
+    <div class="opt-list">
+      <div class="opt-item"><h5>Small arrays (n &lt; ~50)</h5><p>Insertion sort — low overhead, adaptive, stable.</p></div>
+      <div class="opt-item"><h5>General purpose in-memory</h5><p>Introsort (C++ std::sort) or Timsort (Python/Java) — hybrid, fast, robust.</p></div>
+      <div class="opt-item"><h5>Linked lists</h5><p>Merge sort — stable, O(n log n), no random access needed.</p></div>
+      <div class="opt-item"><h5>Memory-constrained</h5><p>Heap sort — guaranteed O(n log n), O(1) space.</p></div>
+      <div class="opt-item"><h5>Integers in small range</h5><p>Counting sort — O(n+k) linear. Negatives? offset. Sparse huge range? don't.</p></div>
+      <div class="opt-item"><h5>Fixed-width integers/strings</h5><p>Radix sort — O(d(n+k)).</p></div>
+      <div class="opt-item"><h5>Nearly sorted stream</h5><p>Insertion sort or Timsort — adaptive, online.</p></div>
+      <div class="opt-item"><h5>External (disk-based)</h5><p>External merge sort — chunks + k-way merge.</p></div>
+    </div>
+  </div>
+</section>
+<section id="quiz">
+  <div class="container">
+    <h2>Multiple choice — easy, medium, hard</h2>
+    <p class="lead">General sorts + ICS4U homework variants. Click an option; explanation appears. Score tracks at the top.</p>
+    <div class="scoreboard"><div class="pill" id="quiz-score">Answered: 0</div></div>
+    <div id="quiz-container"></div>
+  </div>
+</section>
+      <div class="pager">
+        <a href="../"><small>← Back to</small>All ICS4U units</a>
+      </div>
+    </div>
+    <noscript><p class="noscript">This study guide needs JavaScript for the visualizer and quizzes.</p></noscript>
+  </main>
+</div>
+<script>
+(function () {
+  var sb = document.getElementById('sidebar'), sc = document.getElementById('scrim'), mb = document.getElementById('menuBtn');
+  function close() { sb.classList.remove('open'); sc.hidden = true; mb.setAttribute('aria-expanded', 'false'); }
+  mb.addEventListener('click', function () { var o = !sb.classList.contains('open'); sb.classList.toggle('open', o); sc.hidden = !o; mb.setAttribute('aria-expanded', String(o)); });
+  sc.addEventListener('click', close);
+  function cur() { try { return document.documentElement.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); } catch (e) { return 'light'; } }
+  document.querySelectorAll('[data-theme-toggle]').forEach(function (b) { b.addEventListener('click', function () { var n = cur() === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', n); try { localStorage.setItem('ics4u-theme', n); } catch (e) {} }); });
+  var links = Array.prototype.slice.call(document.querySelectorAll('.nav a[data-route]'));
+  function mark() { var h = location.hash.replace('#','') || 'overview'; links.forEach(function (a) { if (a.getAttribute('data-route') === h) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); }); }
+  window.addEventListener('hashchange', mark); mark();
+})();
+</script>
+<script src="js/sorts.js"></script>
+<script src="js/visualizer.js"></script>
+<script src="js/quiz.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
