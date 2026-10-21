@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=PT+Mono&display=swap');
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    font-size: 14pt;
+    color: #2d3142;
+    background: #f4f7fb;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 24px 32px;
+    line-height: 1.7;
+  }
+
+  .page-header {
+    background: linear-gradient(135deg, #597eaa 0%, #7ea8d4 100%);
+    border-radius: 14px;
+    padding: 16px 24px;
+    margin-bottom: 24px;
+    color: white;
+    box-shadow: 0 4px 20px rgba(89,126,170,0.25);
+  }
+
+  .page-header h1 {
+    margin: 0 0 4px 0;
+    font-size: 18pt;
+    font-weight: 800;
+    color: white;
+  }
+
+  .page-header .study-tip {
+    background: rgba(255,255,255,0.2);
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-top: 8px;
+    font-size: 11pt;
+    font-weight: 700;
+  }
+
+  .page-header .study-tip .highlight {
+    color: #ffe066;
+  }
+
+  .example-card {
+    border-radius: 14px;
+    padding: 20px 26px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 12px rgba(45,49,66,0.07);
+    border-left: 5px solid #597eaa;
+    transition: box-shadow 0.2s ease;
+  }
+
+  .example-card:hover {
+    box-shadow: 0 4px 20px rgba(89,126,170,0.15);
+  }
+
+  .example-badge {
+    display: inline-block;
+    background: #597eaa;
+    color: white;
+    font-size: 10pt;
+    font-weight: 800;
+    border-radius: 8px;
+    padding: 3px 12px;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .example-subheader {
+    font-size: 13pt;
+    font-weight: 800;
+    color: #2d3142;
+    margin-bottom: 8px;
+  }
+
+  .example-card p {
+    margin: 0 0 12px 0;
+  }
+
+  .example-card p:last-child {
+    margin-bottom: 0;
+  }
+
+  .code-block-wrap {
+    margin: 12px 0 4px 0;
+  }
+
+  .code-block-label {
+    display: inline-block;
+    font-size: 9pt;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding: 3px 10px;
+    border-radius: 6px 6px 0 0;
+    margin-bottom: -1px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .code-block-label.reference {
+    background: #eaf1f8;
+    color: #597eaa;
+    border: 1px solid #c8dcea;
+    border-bottom: none;
+  }
+
+  .code-block-label.step {
+    background: #597eaa;
+    color: white;
+  }
+
+  pre.code-block {
+    background: #eaf1f8;
+    color: #1e3a52;
+    font-family: 'PT Mono', monospace;
+    font-size: 11pt;
+    border-radius: 0 10px 10px 10px;
+    padding: 16px 20px;
+    margin: 0;
+    overflow-x: auto;
+    line-height: 1.6;
+    box-shadow: inset 0 1px 4px rgba(89,126,170,0.1);
+    border: 1px solid #c8dcea;
+    white-space: pre-wrap;
+  }
+
+  code.inline {
+    background: #ddeaf5;
+    color: #2d5f8a;
+    font-family: 'PT Mono', monospace;
+    font-size: 10.5pt;
+    padding: 2px 7px;
+    border-radius: 5px;
+  }
+</style>
+<link rel="stylesheet" href="https://templates.lcs.brightspace.com/lib/assets/css/styles.min.css"><link rel="stylesheet" href="/d2l/le/contentstyler/7573/files/View" data-override="override"></head><body><div class="page-header">
+<h1><span style="color: #ffffff;">Insertion Sort</span></h1>
+</div>
+<div class="example-card" style="border-left-color: #597eaa; background: #ffffff;">
+<p>Use Visualgo.net 's posted algorithm to understand how Insertion Sort works.</p>
+<p>Use the algorithm to create a code solution for Insertion Sort.<br>*** Don't just copy an insertion sort from the Internet. This activity is about practicing your skill to implement a given algorithm.</p>
+<div class="code-block-wrap">
+<div class="code-block-label step">ALGORITHM</div>
+<pre class="code-block">mark first element as sorted
+for each unsorted element X
+  'extract' the element X
+
+  for j = lastSortedIndex down to 0
+    if current element j &gt; X
+      move sorted element to the right by 1<br>
+    break loop and insert X here
+</pre>
+</div>
+</div></body></html>
