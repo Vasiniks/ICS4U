@@ -387,3 +387,52 @@ h3 .tier-badge { margin-left: 6px; }
   .rail { display: none !important; }
   main.has-rail { display: block; }
 }
+
+/* ---------- ICS4U focused views ---------- */
+.view-pager { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-top:40px; border-top:1px solid var(--line); padding-top:16px; font-family:var(--display); }
+.vp-progress { font-size:13.5px; color:var(--ink-2); }
+.vp-btns { display:flex; gap:8px; }
+.chip-row { display:flex; flex-wrap:wrap; gap:6px; margin:12px 0 4px; }
+.chip-note { font-size:13.5px; color:var(--ink-2); font-family:var(--display); margin:0 0 12px; }
+details.deep { border:1px solid var(--line); border-radius:var(--r); }
+details.deep > summary { color:var(--ink); }
+details.deep .deep-body h5 { font-family:var(--display); font-size:15px; margin:14px 0 4px; color:var(--accent); }
+details.deep .deep-body table { border-collapse:collapse; width:100%; font-size:14px; margin:8px 0; }
+details.deep .deep-body th, details.deep .deep-body td { border-bottom:1px solid var(--line); padding:7px 10px 7px 0; text-align:left; vertical-align:top; }
+details.deep .deep-body thead th { color:var(--ink-2); font-size:12.5px; font-family:var(--display); }
+.run-venv { font-size:12.5px; padding:4px 10px; }
+.btn.sm { padding:6px 12px; font-size:14px; }
+
+/* ---------- ICS4U IDE dock: venv right, terminal bottom, all adjustable ---------- */
+.ide-dock { position:fixed; top:0; right:0; bottom:0; width:min(460px, 42vw); min-width:280px; max-width:760px; z-index:60; display:flex; flex-direction:column; background:var(--surface); border-left:1px solid var(--line); box-shadow:-12px 0 40px rgba(0,0,0,.12); font-family:var(--body); }
+.ide-dock.ide-hidden { display:none; }
+body.ide-open main { margin-right:var(--ide-w, min(460px, 42vw)); }
+@media (max-width:1100px) { body.ide-open main { margin-right:0; } .ide-dock { width:min(430px, 92vw); } }
+.ide-grip { position:absolute; left:-7px; top:0; bottom:0; width:14px; cursor:ew-resize; touch-action:none; }
+.ide-grip::after { content:""; position:absolute; left:6px; top:0; bottom:0; width:2px; background:var(--line); }
+.ide-grip:hover::after { background:var(--accent); }
+.ide-head { display:flex; align-items:baseline; gap:8px; padding:12px 14px 8px; font-family:var(--display); }
+.ide-head strong { font-size:16px; }
+.ide-sub { font-size:12.5px; color:var(--ink-2); }
+.ide-spacer { flex:1; }
+.ide-row { padding:0 14px 8px; }
+.ide-row select { width:100%; border:1px solid var(--line); background:var(--bg); color:var(--ink); border-radius:8px; padding:7px 10px; font:inherit; font-size:14px; }
+#py-editor { flex:1; min-height:140px; margin:0 14px; border:1px solid var(--line); border-radius:var(--r); background:var(--bg); color:var(--ink); font-family:"JetBrains Mono",ui-monospace,monospace; font-size:13px; line-height:1.55; padding:12px; resize:none; }
+#py-editor:focus { outline:2px solid var(--accent); outline-offset:1px; }
+.ide-pkg { display:flex; gap:8px; padding:8px 14px; }
+.ide-pkg input { flex:1; border:1px solid var(--line); background:var(--bg); color:var(--ink); border-radius:8px; padding:7px 10px; font:inherit; font-size:13.5px; }
+.ide-tgrip { height:14px; cursor:ns-resize; position:relative; touch-action:none; }
+.ide-tgrip::after { content:""; position:absolute; left:14px; right:14px; top:6px; height:2px; background:var(--line); }
+.ide-tgrip:hover::after { background:var(--accent); }
+.ide-termhead { display:flex; justify-content:space-between; gap:10px; padding:2px 14px 6px; font-family:var(--display); font-size:13px; color:var(--ink-2); }
+.ide-termin { height:180px; min-height:80px; max-height:420px; margin:0 14px 14px; border:1px solid var(--line); border-radius:var(--r); background:#0b0e1a; display:flex; flex-direction:column; overflow:hidden; }
+:root[data-theme="light"] .ide-termin { background:#101826; }
+#py-term { flex:1; overflow-y:auto; padding:10px 12px; font-family:"JetBrains Mono",ui-monospace,monospace; font-size:12.5px; line-height:1.6; color:#d6deeb; }
+#py-term .tline { white-space:pre-wrap; word-break:break-word; }
+#py-term .cmd { color:#8aa6ff; }
+#py-term .err { color:#ff8a80; }
+#py-term .tok { color:#5fd08f; }
+.ide-stdin { display:flex; gap:8px; align-items:center; border-top:1px solid rgba(255,255,255,.12); padding:7px 10px; color:#8aa6ff; font-family:"JetBrains Mono",monospace; font-size:12.5px; }
+.ide-stdin input { flex:1; background:none; border:0; color:#d6deeb; font:inherit; outline:none; }
+@media print { .ide-dock, #ide-toggle { display:none !important; } body.ide-open main { margin-right:0; } }
+#view [hidden] { display:none !important; }
